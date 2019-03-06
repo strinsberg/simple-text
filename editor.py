@@ -1,15 +1,15 @@
-# Class for simple text editor
 import string
 import curses
 import string_buffer
 
 
 class Text_editor:
+  """A text editor class that keeps track of the buffer and cursor position"""
 
   def __init__(self, text_buffer, filename = None):
     self.buffer = text_buffer  # The buffer to hold the text
     
-    # Set some initial values to the buffer incase there is no file or it
+    # Set initial values to the buffer in case there is no file or it
     # fails to load
     self.filename = "untitled"
     self.buffer.append_line("")
@@ -28,18 +28,18 @@ class Text_editor:
     self.message = ""  # To keep track of any editor information messages
   
   
-  # Open a file with a given filename
   def open_file(self, filename):
+    """Open a file with a given file name and add its contents to the buffer"""
     try:
       with open(filename, 'r') as f:
-        self.buffer.clear()  # Clear the buffer if the file opens
+        self.buffer.clear()
         self.filename = filename
         self.line = 0
         self.pos = 0
         
-        # Add each line from the file to the buffer without "\n"
+        # Add each line from the file to the buffer.  Trim "\n".
+        # Buffer also converts tabs to spaces.
         for line in f:
-          # change when you want to try and use tabs properly
           self.buffer.append_line( line.strip("\n") )
         
         self.has_changes = False
@@ -50,17 +50,20 @@ class Text_editor:
       return False
 
   
-  # Save the buffer to a file
-  def save(self): 
+  def save(self):
+    """Save the buffer contents"""
     return self.save_as(self.filename)
       
-  # save buffer
+
   def save_as(self, filename):
+    """Save the buffer contents in a file with the given filename"""
+    # Join together the buffer contents so it can be written to a file
     contents = ""
     for line in self.buffer.get_lines():
         contents += line + '\n'
         
-    try: 
+    # Attempt to open or create the file and write the contents to it
+    try:
       with open(filename, 'w') as f:
         f.write(contents)
         self.filename = filename
@@ -70,15 +73,18 @@ class Text_editor:
     except:
       self.message = "Error writing file. File not saved!"
       return False
-   
+  
+
   def has_filename(self):
+    """Return weather or not a file name has been set"""
     if self.filename == "untitled":
       return False
     else:
       return True
   
-  # insert a character
+
   def add_char(self, char):
+    """Add a character to the buffer at the cursors current position"""
     if self.pos >= self.line_length():
       self.buffer.append_char(char, self.line)
     else:
@@ -88,15 +94,15 @@ class Text_editor:
     self.has_changes = True
 
 
-  # Backspaces
   def backspace(self):
+    """Delete the character behind the cursor or join line to the one above"""
+    # If the position is at the beggining of a line that is not the first
+    # line then join the line to the end of the line above it.
     if self.pos == 0 and self.line > 0:
-      # If the position is at the beggining of a line that is not the first
-      # line then join the line to the end of the line above it.
       self.pos = self.buffer.line_length(self.line - 1)
       self.buffer.join_lines(self.line - 1, self.line)
       self.line -= 1
-    else:
+    elif not (self.pos == 0 and self.line == 0):
       # Delete the character before the cursor and move the position back 1
       self.buffer.delete_char(self.line, self.pos - 1)
       self.pos -= 1
@@ -104,16 +110,16 @@ class Text_editor:
     self.has_changes = True
 
   
-  # Deletions
   def delete(self):
-    # If the position in the buffer is on a char delete it
+    """Delete the character under the cursor"""
+    # If the position in the buffer is on a char
     if self.pos < self.buffer.line_length(self.line):
       self.buffer.delete_char(self.line, self.pos)
       self.has_changes = True
   
     
-  # Returns
   def enter(self):
+    """Move cursor down to the next line. Split current line if in middle."""
     if self.pos < self.line_length():
       # If the position is not at the end of the line split the line
       self.buffer.split_line(self.line, self.pos)
@@ -129,6 +135,7 @@ class Text_editor:
   # Move the position in the buffer up. If wrap is set as a number of columns
   # the position will follow word wrapping rules.
   def up(self, wrap = None):
+    """Move the cursor up a line or within the line if a wrap width is given"""
     len_current = self.line_length()
     
     # If there is line wrapping
@@ -159,10 +166,8 @@ class Text_editor:
         self.pos = len_next
 
 
-
-  # Move the position in the buffer down. If wrap is a number of columns the
-  # position will follow word wrapping rules
   def down(self, wrap = None):
+    """Move the cursor down a line or within the line if wrap width is given"""
     len_current = self.line_length()
     
     # If there is line wrapping
@@ -176,7 +181,7 @@ class Text_editor:
         pos_wrap = int(self.pos / wrap)
         if pos_wrap + 1 == wraps_current and self.pos % wrap > columns_current:
           self.pos = (wraps_current * wrap) + columns_current
-        else: 
+        else:
           self.pos = self.pos + wrap
       
       # If the position is in the bottom wrap move it to the first wrap of
@@ -198,25 +203,21 @@ class Text_editor:
         self.pos = len_next
   
   
-  
-  # move the position left. Does not move to the next line if end of line is
-  # reached
+  # Does not move to the next line if end of line is reached.
   def left(self):
+    """Move the cursor left once. Won't move down if line end is reached"""
     if self.pos > 0:
       self.pos -= 1
   
   
-  # Move the position right. does not move to next line yet.
+  # Does not move to next line yet.
   def right(self):
+    """Move cursor right once. Wont move up if line begin is reached"""
     if self.pos < self.buffer.line_length(self.line):
-      self.pos += 1   
+      self.pos += 1
   
   
-  # Return the length of the current line or a line relative to the current
-  # line by dline amount. Caller is responsible for not calling it with
-  # out of range lines
+  # Caller is responsible for not calling it with out of range lines
   def line_length(self, dLine = 0):
+    """Return the length of the current line or a line a given offset"""
     return self.buffer.line_length(self.line + dLine)
-    
-
-

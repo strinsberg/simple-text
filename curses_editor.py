@@ -1,30 +1,3 @@
-'''
-Curses display for a simple terminal text editor
-
-TODOs
-
-Some may be their own classes or in editor class.
-Also many of these are not easy to do so think of them as possible future
-  projects to try somehting out. A couple involve parsing and could be
-  informative and good practice.
-
--- Fully comment and clean up source for current working version
--- figure out how to put the main file as a script so that you can open it from
--- -- anywhere. Think about opening and saving if you do this since the 
--- -- current working directory may need to be found.
--- Line numbering
--- Find and replace
--- Undo and redo
--- goto line command
--- New document command
--- Highlight current line
--- More robust communication for actions
--- Command system - get or write own parser
--- Proper handling for tabs
--- Syntax highlighting
--- Figure out mouse moving the cursor
-
-'''
 import editor
 import string_buffer
 import string
@@ -32,10 +5,11 @@ import os
 import curses
 
 
-# An implementation of the editor with curses
 class Curses_editor:
+  """A command line text editor using curses"""
 
   def __init__(self, window, filename = None):
+    """Set up the editor and initialize curses"""
     self.window = window
     # Initialize the text editor and buffer
     self.editor = editor.Text_editor(string_buffer.Buffer(), filename)
@@ -57,12 +31,10 @@ class Curses_editor:
     
     # Tab stuff
     self.tabwidth = 4
-  
-    # If the file has been changed
-    self.changed = False
-    
+
   
   def start(self):
+    """Start the editor and run the program loop"""
     while self.run:
       self.display()
       curses.doupdate()
@@ -70,6 +42,7 @@ class Curses_editor:
   
   
   def display(self):
+    """Display the buffer and other editor information on the screen"""
     self.window.clear()
     
     # If the screen is big enough print all relevant information
@@ -88,6 +61,7 @@ class Curses_editor:
   
   
   def print_buffer(self):
+    """Print the visible contents of the buffer"""
     # Loop through lines in the buffer starting at the line that
     # should be at the top of the screen. Keep track of row being drawn to.
     lines = self.editor.buffer.get_lines()
@@ -117,12 +91,14 @@ class Curses_editor:
   
     
   def print_message(self):
+    """Print the current editor message"""
     if self.max_columns > len(self.editor.message):
       self.window.addstr(self.max_rows - 3, 0,
           self.editor.message, curses.A_REVERSE)
     
     
   def print_coords(self):
+    """Print the coordinates of the cursor"""
     ln = self.editor.line
     col = self.editor.pos + 1
     coords = "Ln {}, Col {}".format(ln, col)
@@ -133,6 +109,7 @@ class Curses_editor:
   
   
   def print_menu(self):
+    """Print the menu"""
     menu = [
       {"key": "^X", "text": "Quit"},
       {"key": "^W", "text": "Write Buffer"},
@@ -157,7 +134,8 @@ class Curses_editor:
     
   
   def print_title_bar(self):
-    if self.changed:
+    """Print the title bar"""
+    if self.editor.has_changes:
       changes = "***"
     else:
       changes = ""
@@ -170,6 +148,7 @@ class Curses_editor:
   
   
   def scroll(self):
+    """Scroll the contents of the buffer"""
     rows = self.rows_from_top()
     while rows > self.max_rows - 4 or (rows < 1 and self.top_line > 0):
       if rows > self.max_rows - 4:
@@ -181,6 +160,7 @@ class Curses_editor:
     
   
   def rows_from_top(self):
+    """Return number of rows top visible line is from buffer begginning"""
     all_lines = self.editor.buffer.get_lines()
     sub_lines = all_lines[self.top_line : self.editor.line + 1]
     
@@ -192,6 +172,7 @@ class Curses_editor:
   
   
   def set_cursor(self):
+    """Set the position of the cursor on the screen"""
     all_lines = self.editor.buffer.get_lines()
     sub_lines = all_lines[self.top_line : self.editor.line]
     
@@ -204,6 +185,7 @@ class Curses_editor:
     
   
   def handle_input(self):
+    """Wait for the user to press a key and take action when they do"""
     key = self.window.getch()
     
     ########### Movement keys ################
@@ -229,7 +211,7 @@ class Curses_editor:
     elif key == curses.KEY_ENTER or key == ord("\n"):
       self.editor.enter()
       
-    elif key == ord("\t"):    
+    elif key == ord("\t"):
       for i in range(self.tabwidth):
         self.editor.add_char(" ")
       
@@ -252,6 +234,7 @@ class Curses_editor:
       
     
   def get_input(self, prompt):
+    """Get input from the user in a specific area with a given prompt"""
     # Set up window environment
     curses.echo()
     self.display()
@@ -265,15 +248,17 @@ class Curses_editor:
 
 
   def open(self):
+    """Get a file name from the user and attempt to open it"""
     self.row = 1
     filename = self.get_input("File path:")
     if filename != "" and self.editor.open_file(filename):
-      self.editor.buffer.replace_tabs(self.tabwidth) 
+      self.editor.buffer.replace_tabs(self.tabwidth)
       self.column = 0
       self.top_line = 0
 
   
-  def save(self, save_as):   
+  def save(self, save_as):
+    """Save or ask user for filename if there isn't one yet"""
     # If the file has no name ask what name to save it as
     if not self.editor.has_filename() or save_as:
       name = self.get_input("Save as:")
@@ -286,11 +271,11 @@ class Curses_editor:
   
   
   def quit(self):
+    """Stop running the program and prompt to save if necessary"""
     # If the buffer has changed ask if they want to save it
-    if self.changed:
+    if self.editor.has_changes:
       confirm = self.get_input("Write changes to file? (y or n):")
       if confirm in ['y', 'Y']:
         self.save(True)
      
     self.run = False
-      
