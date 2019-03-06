@@ -1,4 +1,4 @@
-# simple-text
+# Simple Text
 
 A very basic terminal text editor.
 
