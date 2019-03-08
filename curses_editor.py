@@ -13,7 +13,7 @@ class Curses_editor:
     self.window = window
     # Initialize the text editor and buffer
     self.editor = editor.Text_editor(string_buffer.Buffer(), filename)
-    self.title = "Teddy"
+    self.title = "Simple Text"
     self.version = "0.1.0"
     
     # Position of the cursor on the screen
