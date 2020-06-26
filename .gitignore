@@ -1,0 +1,7 @@
+*.swp
+*.orig
+*.spec
+
+dist
+build
+__pycache__
