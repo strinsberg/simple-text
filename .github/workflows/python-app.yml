@@ -10,6 +10,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            FILENAME: simple_text
+          - os: macos-latest
+            FILENAME: simple_text_mac
+          - os: window-latest
+            FILENAME: simple_text.exe
 
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +30,7 @@ jobs:
         pip install pyinstaller
     - name: build
       run: |
-        pyinstaller simple-text/simple_text.py --onefile
+        pyinstaller simple-text/simple_text.py -n ${{matrix.FILENAME}} --onefile
     - name: Archive build
       uses: actions/upload-artifact@v1
       with:
