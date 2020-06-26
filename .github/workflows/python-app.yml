@@ -21,7 +21,7 @@ jobs:
         pip install pyinstaller
     - name: build
       run: |
-        pyinstaller simple-text/simple-text.py -n simple_text --onefile
+        pyinstaller simple-text.py -n simple_text --onefile
     - name: Archive build
       uses: actions/upload-artifact@v1
       with:
