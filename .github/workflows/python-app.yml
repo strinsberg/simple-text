@@ -13,10 +13,10 @@ jobs:
         include:
           - os: ubuntu-latest
             FILENAME: simple_text
-          - os: macos-latest
-            FILENAME: simple_text_mac
           - os: window-latest
             FILENAME: simple_text.exe
+          - os: macos-latest
+            FILENAME: simple_text_mac
 
     steps:
     - uses: actions/checkout@v2
