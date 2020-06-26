@@ -20,8 +20,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        ls
         pip install pyinstaller
+    - name: list dir
+      run: |
+        ls *
     - name: build
       run: |
         pyinstaller simple_text.py --onefile
