@@ -7,7 +7,7 @@ on:
 jobs:
   build:
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
         pip install pyinstaller
     - name: build
       run: |
-        pyinstaller simple-text/simple-text.py -n simple_text.exe --onefile
+        pyinstaller simple-text/simple-text.py -n simple_text --onefile
     - name: Archive build
       uses: actions/upload-artifact@v1
       with:
