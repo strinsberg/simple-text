@@ -19,4 +19,6 @@ This is extra bad in python since strings are immutable, but for a learning expe
 - Pretty much anything else your prefered text editor does
 
 # Try it out
-If you want to give it a try just download the source and run $> python3 main.py
+If you want to give it a try just download the source and run `$ python3 simple_text.py`
+
+You can also dowload a binary for your OS at https://strinsberg.github.io/
