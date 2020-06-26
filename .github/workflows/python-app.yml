@@ -13,7 +13,7 @@ jobs:
         include:
           - os: ubuntu-latest
             FILENAME: simple_text
-          - os: window-latest
+          - os: windows-latest
             FILENAME: simple_text.exe
           - os: macos-latest
             FILENAME: simple_text_mac
