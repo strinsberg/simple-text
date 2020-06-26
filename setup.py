@@ -9,6 +9,6 @@ setup(
     url='https://github.com/strinsberg/simple-text',
     author='Steven Deutekom',
     entry_points = {
-        'console_scripts': ['simple-text=simple-text.__main__:main'],
+        'console_scripts': ['simple-text=simple-text.simple_text:main'],
     }
 )
