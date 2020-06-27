@@ -1,5 +1,4 @@
 # Simple Text
-
 A very basic terminal text editor.
 
 I made this to learn a little about the challenges of building a text editor and a more involved python program.
@@ -19,6 +18,13 @@ This is extra bad in python since strings are immutable, but for a learning expe
 - Pretty much anything else your prefered text editor does
 
 # Try it out
-If you want to give it a try just download the source and run `$ python3 simple_text.py`
+If you want to give it a try just download the source. Open a terminal in the created directoryand run
+```
+python3 simple_text.py
+```
 
-You can also dowload a binary for your OS at https://strinsberg.github.io/
+On windows you will need to install the `windows-curses` module to run the program.
+```
+pip install windows-curses
+```
+
